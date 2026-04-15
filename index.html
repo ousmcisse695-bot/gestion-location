@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mon app de location</title>
+    background-color: white; /* Fond blanc pour la fiche */
+<style>
+.card {
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-top: 30px;
+    width: 300px;
+    overflow: hidden; /* Important : pour que l'image ne dépasse pas des coins arrondis */
+    transition: transform 0.3s; /* Pour l'animation */
+}
+
+/* L'effet quand tu passes la souris dessus */
+.card:hover {
+    transform: translateY(-10px);
+}
+
+.card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover; /* Recadre l'image proprement */
+}
+
+/* On crée un espace pour le texte */
+.card-content {
+    padding: 20px;
+}
+   </style>
+</head>
+<h1>gestion de location v1.0</h1>
+    <button>Ajouter une nouvelle location</button>
+
+    <div id="liste-locations">
+        <div class="card">
+            <h3>Appartement Marina</h3>
+            <p>Prix : 500 DH / nuit</p>
+        </div>
+    </div>
+</body>
+<h1 style="text-align: center;">Mon App de Location</h1>
+
+    <div style="background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; padding: 20px; border-radius: 15px; margin: 20px auto; width: 300px; text-align: center; box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);">
+        <span style="font-size: 0.9em; opacity: 0.9;">Solde accumulé</span><br>
+        <strong style="font-size: 1.8em;"><span id="cagnotte">0.00</span> DH</strong>
+    </div>
+
+    
+
+    <script>
+      // --- DÉBUT DE TON SCRIPT UNIQUE ---
+let monArgent = parseFloat(localStorage.getItem('portefeuille')) || 0;
+const elementCagnotte = document.getElementById('cagnotte');
+
+setInterval(() => {
+    monArgent += 0.05; 
+    if (elementCagnotte) {
+        elementCagnotte.innerText = monArgent.toFixed(2);
+    }
+    localStorage.setItem('portefeuille', monArgent);
+}, 1000);
+
+// ... Ensuite tu mets tes fonctions sauvegarder() et ajouterCarte() ...
+    
+        
+        // On sauvegarde dans la mémoire du navigateur
+        localStorage.setItem('portefeuille', monArgent);
+    }, 1000);
+    // --- LOGIQUE DE RECHERCHE FINALE ---
+const barreRecherche = document.getElementById('recherche');
+
+barreRecherche.addEventListener('input', () => {
+    const texteSaisi = barreRecherche.value.toLowerCase();
+    const toutesLesCartes = document.querySelectorAll('.card');
+
+    toutesLesCartes.forEach(carte => {
+        // On récupère le nom de l'appartement dans le titre h3
+        const nomAppartement = carte.querySelector('h3').innerText.toLowerCase();
+        
+        // Comparaison : on affiche si le nom contient le texte saisi
+        if (nomAppartement.includes(texteSaisi)) {
+            carte.style.display = "block";
+        } else {
+            carte.style.display = "none";
+        }
+    });
+});
+               style="padding: 10px; width: 300px; border-radius: 20px; border: 1px solid #ddd;">
+    </div>
+
+    <button id="btn-ajouter">Ajouter une nouvelle location</button>
+    
+    <div id="liste-locations"></div>
+    
+ const bouton = document.querySelector('button');
+    const liste = document.getElementById('liste-locations');
+
+    // --- 1. FONCTION DE SAUVEGARDE ---
+    function sauvegarder() {
+        const locations = [];
+        document.querySelectorAll('.card').forEach(card => {
+            locations.push({
+                nom: card.querySelector('h3').innerText,
+                prix: card.querySelector('p').innerText,
+                image: card.querySelector('img') ? card.querySelector('img').src : ""
+            });
+        });
+        localStorage.setItem('mesLocations', JSON.stringify(locations));
+    }
+function ajouterCarte(nom, prix, imageURL) {
+    const sourceImage = imageURL || "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=300";
+    const nouvelleCard = document.createElement('div');
+    nouvelleCard.className = 'card';
+    
+    // On utilise la classe card-content pour le texte
+    nouvelleCard.innerHTML = `
+        <img src="${sourceImage}" alt="${nom}">
+        <div class="card-content">
+            <h3>${nom}</h3>
+            <p style="color: #2ecc71; font-weight: bold; margin: 10px 0;">${prix}</p>
+        </div>
+    `;
+
+    const btnSupprimer = document.createElement('button');
+    btnSupprimer.innerText = "Supprimer";
+    btnSupprimer.style.backgroundColor = "#e74c3c";
+    btnSupprimer.style.color = "white";
+    btnSupprimer.style.border = "none";
+    btnSupprimer.style.padding = "8px";
+    btnSupprimer.style.width = "100%";
+    btnSupprimer.style.cursor = "pointer";
+
+    btnSupprimer.addEventListener('click', () => {
+        nouvelleCard.remove();
+        sauvegarder(); // Pour mettre à jour la mémoire
+    });
+
+    nouvelleCard.appendChild(btnSupprimer);
+    liste.appendChild(nouvelleCard);
+}
+    // --- 2. FONCTION POUR CRÉER UNE CARTE (Utilisée par l'ajout ET le chargement) ---
+    function ajouterCarte(nom, prix, imageURL) {
+        const sourceImage = imageURL || "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=300";
+        const nouvelleCard = document.createElement('div');
+        nouvelleCard.className = 'card';
+        
+        nouvelleCard.innerHTML = `
+            <img src="${sourceImage}" alt="${nom}" style="width:100%; border-radius:10px;">
+            <h3>${nom}</h3>
+            <p>${prix}</p>
+        `;
+
+        // Bouton Supprimer
+        const btnSupprimer = document.createElement('button');
+        btnSupprimer.innerText = "Supprimer";
+        btnSupprimer.style.backgroundColor = "#e74c3c";
+        btnSupprimer.style.marginTop = "10px";
+        btnSupprimer.style.width = "100%";
+
+        btnSupprimer.addEventListener('click', () => {
+            nouvelleCard.remove();
+            sauvegarder(); // On sauvegarde après suppression
+        });
+
+        nouvelleCard.appendChild(btnSupprimer);
+        liste.appendChild(nouvelleCard);
+    }
+
+    // --- 3. ÉCOUTEUR DU BOUTON PRINCIPAL ---
+    bouton.addEventListener('click', () => {
+        const nom = prompt("Nom de l'appartement ?");
+        const prix = prompt("Prix par nuit (en DH) ?");
+        if (nom && prix) {
+            const imageURL = prompt("Lien de l'image (optionnel) :");
+            ajouterCarte(nom, prix + " DH / nuit", imageURL);
+            sauvegarder(); // On sauvegarde après ajout
+        }
+    });
+
+    // --- 4. CHARGEMENT AU DÉMARRAGE ---
+    const memoire = localStorage.getItem('mesLocations');
+    if (memoire) {
+        JSON.parse(memoire).forEach(loc => {
+            ajouterCarte(loc.nom, loc.prix, loc.image);
+        });
+    }
+    // --- LOGIQUE DE RECHERCHE ---
+    const barreRecherche = document.getElementById('recherche');
+
+    barreRecherche.addEventListener('input', () => {
+        const texteSaisi = barreRecherche.value.toLowerCase();
+        const toutesLesCartes = document.querySelectorAll('.card');
+
+        toutesLesCartes.forEach(carte => {
+            // On récupère le nom dans le h3 de chaque carte
+            const nomAppartement = carte.querySelector('h3').innerText;toLowerCase();
+            
+            // Si le nom contient le texte tapé, on affiche, sinon on cache
+            if (nomAppartement.includes(texteSaisi)) {
+                carte.style.display = "block";
+            } else {
+                carte.style.display = "none";
+            }
+        });
+    });
+    // --- INITIALISATION ---
+    const bouton = document.getElementById('btn-ajouter');
+    const liste = document.getElementById('liste-locations');
+    const barreRecherche = document.getElementById('recherche');
+    const elementCagnotte = document.getElementById('cagnotte');
+    
+    let monArgent = parseFloat(localStorage.getItem('portefeuille')) || 0;
+
+    // --- 1. COMPTEUR D'ARGENT ---
+    setInterval(() => {
+        monArgent += 0.05; 
+        if (elementCagnotte) elementCagnotte.innerText = monArgent.toFixed(2);
+        localStorage.setItem('portefeuille', monArgent);
+    }, 1000);
+
+    // --- 2. FONCTION SAUVEGARDE ---
+    function sauvegarder() {
+        const locations = [];
+        document.querySelectorAll('.card').forEach(carte => {
+            locations.push({
+                nom: carte.querySelector('h3').innerText,
+                prix: carte.querySelector('p').innerText
+            });
+        });
+        localStorage.setItem('mesLocations', JSON.stringify(locations));
+    }
+
+    // --- 3. CRÉATION DE CARTE ---
+    function ajouterCarte(nom, prix) {
+        const nouvelleCard = document.createElement('div');
+        nouvelleCard.className = 'card';
+        nouvelleCard.innerHTML = <h3>${nom}</h3><p>${prix}</p>;
+        
+        const btnSuppr = document.createElement('button');
+        btnSuppr.innerText = "Supprimer";
+        btnSuppr.onclick = () => { nouvelleCard.remove(); sauvegarder(); };
+        
+        nouvelleCard.appendChild(btnSuppr);
+        liste.appendChild(nouvelleCard);
+    }
+
+    // --- 4. RECHERCHE ---
+    barreRecherche.addEventListener('input', () => {
+        const texte = barreRecherche.value.toLowerCase();
+        document.querySelectorAll('.card').forEach(carte => {
+            const nom = carte.querySelector('h3').innerText.toLowerCase();
+            carte.style.display = nom.includes(texte) ? "block" : "none";
+        });
+    });
+
+    // --- 5. CHARGEMENT AU DÉMARRAGE ---
+    const memoire = JSON.parse(localStorage.getItem('mesLocations')) || [];
+    memoire.forEach(loc => ajouterCarte(loc.nom, loc.prix));
+
+    bouton.onclick = () => {
+        const n = prompt("Nom ?");
+        const p = prompt("Prix ?");
+        if(n && p) { ajouterCarte(n, p); sauvegarder(); }
+    };  
+</script>
+</body>
+</html>
